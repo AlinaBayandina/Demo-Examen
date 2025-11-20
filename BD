@@ -1,0 +1,333 @@
+USE [master]
+GO
+/****** Object:  Database [PartnerOrders]    Script Date: 20.11.2025 23:23:04 ******/
+CREATE DATABASE [PartnerOrders]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'PartnerOrders', FILENAME = N'C:\Users\shjl9\OneDrive\Desktop\MSSQL16.MSSQLSERVER01\MSSQL\DATA\PartnerOrders.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'PartnerOrders_log', FILENAME = N'C:\Users\shjl9\OneDrive\Desktop\MSSQL16.MSSQLSERVER01\MSSQL\DATA\PartnerOrders_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [PartnerOrders] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [PartnerOrders].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [PartnerOrders] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [PartnerOrders] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [PartnerOrders] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [PartnerOrders] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [PartnerOrders] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET RECOVERY FULL 
+GO
+ALTER DATABASE [PartnerOrders] SET  MULTI_USER 
+GO
+ALTER DATABASE [PartnerOrders] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [PartnerOrders] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [PartnerOrders] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [PartnerOrders] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [PartnerOrders] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [PartnerOrders] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'PartnerOrders', N'ON'
+GO
+ALTER DATABASE [PartnerOrders] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [PartnerOrders] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [PartnerOrders]
+GO
+/****** Object:  Table [dbo].[Partners]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Partners](
+	[PartnerID] [int] NOT NULL,
+	[PartnerTypeID] [int] NOT NULL,
+	[PartnerName] [nvarchar](100) NOT NULL,
+	[Director] [nvarchar](100) NOT NULL,
+	[Email] [nvarchar](100) NOT NULL,
+	[Phone] [nvarchar](20) NOT NULL,
+	[LegalAddress] [nvarchar](200) NOT NULL,
+	[INN] [nvarchar](12) NOT NULL,
+	[Rating] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PartnerID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[OrderID] [int] IDENTITY(1,1) NOT NULL,
+	[PartnerID] [int] NOT NULL,
+	[OrderDate] [datetime] NOT NULL,
+	[Status] [nvarchar](20) NOT NULL,
+	[PrepaymentReceived] [bit] NOT NULL,
+	[PrepaymentDate] [datetime] NULL,
+	[CompletionDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[OrderDetails]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Создание представления для просмотра заявок с информацией о партнере
+CREATE VIEW [dbo].[OrderDetails] AS
+SELECT 
+    o.OrderID,
+    o.OrderDate,
+    o.Status,
+    o.PrepaymentReceived,
+    p.PartnerID,
+    p.PartnerName,
+    p.Director,
+    p.Email,
+    p.Phone
+FROM Orders o
+INNER JOIN Partners p ON o.PartnerID = p.PartnerID;
+GO
+/****** Object:  Table [dbo].[ProductTypes]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductTypes](
+	[ProductTypeID] [int] NOT NULL,
+	[TypeName] [nvarchar](100) NOT NULL,
+	[TypeCoefficient] [decimal](10, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ProductTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Products]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Products](
+	[ProductID] [int] NOT NULL,
+	[ProductTypeID] [int] NOT NULL,
+	[ProductName] [nvarchar](200) NOT NULL,
+	[Article] [nvarchar](50) NOT NULL,
+	[MinPartnerPrice] [decimal](10, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[OrderItems]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OrderItems](
+	[OrderItemID] [int] IDENTITY(1,1) NOT NULL,
+	[OrderID] [int] NOT NULL,
+	[ProductID] [int] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[UnitPrice] [decimal](10, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderItemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[OrderItemDetails]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Создание представления для просмотра позиций в заявках
+CREATE VIEW [dbo].[OrderItemDetails] AS
+SELECT 
+    oi.OrderItemID,
+    oi.OrderID,
+    oi.Quantity,
+    oi.UnitPrice,
+    oi.ProductionDate,
+    p.ProductID,
+    p.ProductName,
+    p.Article,
+    pt.TypeName AS ProductType
+FROM OrderItems oi
+INNER JOIN Products p ON oi.ProductID = p.ProductID
+INNER JOIN ProductTypes pt ON p.ProductTypeID = pt.ProductTypeID;
+GO
+/****** Object:  Table [dbo].[MaterialTypes]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MaterialTypes](
+	[MaterialTypeID] [int] IDENTITY(1,1) NOT NULL,
+	[MaterialTypeName] [nvarchar](100) NOT NULL,
+	[DefectPercentage] [decimal](5, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[MaterialTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PartnerProducts]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PartnerProducts](
+	[PartnerProductID] [int] NOT NULL,
+	[ProductID] [int] NOT NULL,
+	[PartnerID] [int] NOT NULL,
+	[Quantity] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PartnerProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PartnerTypes]    Script Date: 20.11.2025 23:23:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PartnerTypes](
+	[PartnerTypeID] [int] NOT NULL,
+	[PartnerTypeName] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PartnerTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_OrderItems_OrderID]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_OrderItems_OrderID] ON [dbo].[OrderItems]
+(
+	[OrderID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_OrderItems_ProductID]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_OrderItems_ProductID] ON [dbo].[OrderItems]
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_PartnerID]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_PartnerID] ON [dbo].[Orders]
+(
+	[PartnerID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_Orders_Status]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_Status] ON [dbo].[Orders]
+(
+	[Status] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_PartnerProducts_PartnerID]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_PartnerProducts_PartnerID] ON [dbo].[PartnerProducts]
+(
+	[PartnerID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_PartnerProducts_ProductID]    Script Date: 20.11.2025 23:23:05 ******/
+CREATE NONCLUSTERED INDEX [IX_PartnerProducts_ProductID] ON [dbo].[PartnerProducts]
+(
+	[ProductID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT (getdate()) FOR [OrderDate]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ('Новая') FOR [Status]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ((0)) FOR [PrepaymentReceived]
+GO
+ALTER TABLE [dbo].[OrderItems]  WITH CHECK ADD FOREIGN KEY([OrderID])
+REFERENCES [dbo].[Orders] ([OrderID])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[OrderItems]  WITH CHECK ADD FOREIGN KEY([ProductID])
+REFERENCES [dbo].[Products] ([ProductID])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([PartnerID])
+REFERENCES [dbo].[Partners] ([PartnerID])
+GO
+ALTER TABLE [dbo].[PartnerProducts]  WITH CHECK ADD FOREIGN KEY([PartnerID])
+REFERENCES [dbo].[Partners] ([PartnerID])
+GO
+ALTER TABLE [dbo].[PartnerProducts]  WITH CHECK ADD FOREIGN KEY([ProductID])
+REFERENCES [dbo].[Products] ([ProductID])
+GO
+ALTER TABLE [dbo].[Partners]  WITH CHECK ADD FOREIGN KEY([PartnerTypeID])
+REFERENCES [dbo].[PartnerTypes] ([PartnerTypeID])
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD FOREIGN KEY([ProductTypeID])
+REFERENCES [dbo].[ProductTypes] ([ProductTypeID])
+GO
+USE [master]
+GO
+ALTER DATABASE [PartnerOrders] SET  READ_WRITE 
+GO
