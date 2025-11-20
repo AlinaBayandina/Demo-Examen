@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="09f5870532c447f99810e8f757644a68" Name="Diagram1">
+        <EntityTypeShape EntityType="PartnerOrdersModel.MaterialTypes" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.OrderItems" Width="1.5" PointX="5.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.Orders" Width="1.5" PointX="3" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.PartnerProducts" Width="1.5" PointX="8.25" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.Partners" Width="1.5" PointX="0.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.PartnerTypes" Width="1.5" PointX="1.5" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.Products" Width="1.5" PointX="3" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PartnerOrdersModel.ProductTypes" Width="1.5" PointX="0.75" PointY="3" IsExpanded="true" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__OrderItem__Order__46E78A0C" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__OrderItem__Produ__47DBAE45" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__Orders__PartnerI__440B1D61" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__PartnerPr__Partn__4D94879B" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__PartnerPr__Produ__4CA06362" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__Partners__Partne__398D8EEE" ManuallyRouted="false" />
+        <AssociationConnector Association="PartnerOrdersModel.FK__Products__Produc__3E52440B" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
